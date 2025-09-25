@@ -1,6 +1,6 @@
 package com.soundapp.music;
 
-import com.soundapp.music.audio.AudioContext;
+import com.soundapp.music.core.engine.AudioContext;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.ConfigurableApplicationContext;

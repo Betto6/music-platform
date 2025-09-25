@@ -1,4 +1,4 @@
-package com.soundapp.music.audio;
+package com.soundapp.music.core.engine;
 
 import org.springframework.stereotype.Component;
 
