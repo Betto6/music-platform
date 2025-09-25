@@ -25,7 +25,7 @@
     <dependencies>
         <!-- Dipendenza dal nostro modulo audio-engine -->
         <dependency>
-            <groupId>com.tuoprogetto.music</groupId>
+            <groupId>com.soundapp.music</groupId>
             <artifactId>audio-engine</artifactId>
             <version>${project.version}</version>
         </dependency>
