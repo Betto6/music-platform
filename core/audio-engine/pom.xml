@@ -18,7 +18,10 @@
     <description>Core audio processing module</description>
 
     <dependencies>
-        <!-- Dipendenze specifiche per audio verranno aggiunte qui -->
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+        </dependency>
     </dependencies>
 
 </project>
