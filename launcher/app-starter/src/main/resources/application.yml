@@ -1,0 +1,17 @@
+spring:
+  application:
+    name: Music Platform
+
+server:
+  port: 8080
+
+# Configurazioni audio custom
+audio:
+  sample-rate: 44100
+  buffer-size: 512
+  channels: 2
+
+logging:
+  level:
+    com.tuoprogetto.music: DEBUG
+    org.springframework: INFO
