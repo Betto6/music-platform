@@ -2,7 +2,7 @@ package com.soundapp.music.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
-import com.soundapp.music.audio.AudioContext;
+import com.soundapp.music.core.engine.AudioContext;
 import java.util.HashMap;
 import java.util.Map;
 
