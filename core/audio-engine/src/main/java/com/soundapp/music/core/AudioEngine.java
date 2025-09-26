@@ -81,6 +81,13 @@ public class AudioEngine {
         }
     }
 
+    public synchronized void stop() {
+        if (isRunning) {
+            isRunning = false;
+            System.out.println("AudioEngine fermato");
+        }
+    }
+
     //imposta una nuova frequenza
     public synchronized void setFrequency(float freq) {
         this.frequency = AudioContext.clamp(freq, AudioContext.MIN_FREQUENCY, AudioContext.MAX_FREQUENCY);
