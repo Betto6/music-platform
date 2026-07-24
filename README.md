@@ -1,157 +1,44 @@
-﻿# Music Platform
-🎯 TECHNO SYNTHESIS & LIVE PLATFORM - Architettura Completa
+# Music Platform
 
-🎨 COMPONENTI CHIAVE DA IMPLEMENTARE
-1. CORE ENGINE FOUNDATION
+Sintetizzatore programmabile per musica elettronica, orientato al render offline.
 
-Clock precision con compensazione drift
-Buffer management double/triple buffering
-Lock-free audio processing
-Event scheduling con timing accurato
+## Modello mentale
 
-2. SYNTHESIS CAPABILITIES
+```
+Synth Objects → Pattern Generator → Renderer → WAV files
+```
 
-Oscillatori band-limited (no aliasing)
-Drum synthesis (non samples)
-Modulation routing flessibile
-Voice allocation per polifonia
+Ogni "oggetto" (oscillatore, kick, bass, filtro...) è autonomo e componibile.
+Non c'è un motore real-time da servire: si descrive una composizione in codice
+e la si renderizza offline, alla velocità di calcolo della macchina, non a
+tempo di orologio.
 
-3. SEQUENCING FEATURES
+## Moduli
 
-Pattern di lunghezza variabile
-Euclidean rhythms
-Probability per step
-Swing/groove control
+| Modulo | Ruolo |
+|---|---|
+| `core/audio-engine` | **Synthesis** — cuore del progetto. Oscillatori band-limited, drum synthesis, filtri, envelope, modulation routing. Qui vive il valore del sintetizzatore. |
+| `core/composition` | **Pattern Generator / composition scripting** — descrive come gli synth objects evolvono nel tempo: automazione dei parametri, variazioni, struttura. Sostituisce i concetti di "sequencing" e "live coding" con un'unica API di scripting per comporre programmaticamente, senza istanziare oggetti a mano. |
+| `core/render-engine` | **Renderer** — trasforma una composizione in audio e la esporta come file WAV. Include la processing chain (effetti) applicata in fase di render, non real-time. |
+| `launcher/app-starter` | Applicazione Spring Boot che assembla i moduli core ed espone il punto di ingresso. |
 
-4. EFFECTS PROCESSING
+## Perché offline
 
-Zero-latency processing path
-Effetti modulabili via LFO
-Sidechain compression
-Saturazione/distorsione analogica
+Rendere il render offline elimina i vincoli più difficili della JVM per l'audio:
 
-5. LIVE CODING SYSTEM
+- niente preoccupazioni sul GC durante il render
+- niente latenza real-time da rispettare
+- si può renderizzare più veloce del real-time (limite = CPU, non wall clock)
 
-Sintassi minimale e musicale
-Error recovery (non crasha mai)
-Sync automatico al beat
-Visual feedback immediato
+L'export WAV è il deliverable principale. MIDI e OSC restano opzionali/futuri.
 
-6. EXPORT/INTEGRATION
+## Ordine di priorità
 
-Bounce pattern to audio
-MIDI learn per controllers
-OSC per comunicazione esterna
-Preset management system
+1. **Synthesis objects** — kick, bass, oscillatori, filtri: massima qualità DSP
+2. **Render engine** — trasforma una descrizione temporale in WAV
+3. **Composition API** — come si descrivono pattern e strutture in codice
 
-🔧 TECNOLOGIE E LIBRERIE
-Audio Core:
+## Stack tecnico
 
-Java Sound API: Base
-JJack: Pro audio (optional)
-TarsosDSP: Algoritmi DSP
-
-Threading:
-
-Disruptor: Lock-free queues
-Project Loom: Virtual threads (Java 19+)
-
-Live Coding:
-
-GraalVM: JavaScript engine embedded
-JShell: Java REPL integration
-
-Persistenza:
-
-Jackson: JSON per preset/pattern
-H2: Database embedded per progetti
-
-📈 FASI DI SVILUPPO
-FASE 1: Foundation (2-3 settimane)
-
-Setup audio I/O base
-Clock system stabile
-Buffer management
-Prima sintesi (sine wave)
-
-FASE 2: Synthesis (3-4 settimane)
-
-Kick drum synth
-Bass synth base
-Envelope system
-Filter implementation
-
-FASE 3: Sequencing (3-4 settimane)
-
-16-step sequencer
-Pattern storage
-Multiple tracks
-Basic parameter locks
-
-FASE 4: Effects (2-3 settimane)
-
-Delay base
-Filter sweep
-Compressor semplice
-Effect chaining
-
-FASE 5: Live Features (4-5 settimane)
-
-Parser per comandi live
-Hot reload patterns
-State preservation
-Error handling robusto
-
-FASE 6: Polish (2-3 settimane)
-
-Export audio
-MIDI integration
-Performance optimization
-Preset system
-
-🎮 USO FINALE PREVISTO
-java// Sound Design Mode
-KickSynth kick = new KickSynth();
-kick.setPitch(55);  // Hz
-kick.setDecay(250);  // ms
-kick.setPunch(0.8);
-kick.exportToWav("techno_kick.wav");
-
-// Pattern Mode
-Pattern pattern = new Pattern(16);
-pattern.addStep(0, kick, velocity: 127);
-pattern.addStep(4, snare, velocity: 100);
-sequencer.loop(pattern, bpm: 128);
-
-// Live Coding Mode
-live.eval("
-every 4 beats {
-kick -> filter(cutoff: random(20, 80))
-}
-
-loop 'bass' {
-note: [e1, e1, g1, a1].tick
-cutoff: sine(0.1) * 60 + 40
-res: 0.9
-}
-");
-💡 CONCETTI JAVA AVANZATI CHE IMPARERAI
-
-Concurrency: Audio thread safety
-DSP Algorithms: Filtri, FFT, convoluzione
-Design Patterns: Observer, Factory, Strategy
-Memory Management: Object pooling, ring buffers
-Real-time Constraints: GC tuning, latency
-DSL Creation: Parser, interpreter
-Plugin Architecture: Dynamic loading
-Performance: Profiling, optimization
-
-
-Questa struttura è progettata per:
-
-✅ Crescere incrementalmente
-✅ Rimanere modulare e testabile
-✅ Supportare sia sound design che live performance
-✅ Insegnare concetti avanzati progressivamente
-
-✅ Essere divertente da sviluppare!
+- Java 25, Spring Boot 4.1
+- Maven multi-modulo

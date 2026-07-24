@@ -2,12 +2,15 @@
 <project version="4">
   <component name="CompilerConfiguration">
     <annotationProcessing>
+      <profile default="true" name="Default" enabled="true" />
       <profile name="Maven default annotation processors profile" enabled="true">
         <sourceOutputDir name="target/generated-sources/annotations" />
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
         <module name="audio-engine (1)" />
         <module name="app-starter" />
+        <module name="render-engine" />
+        <module name="composition" />
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel>
@@ -19,6 +22,8 @@
       <module name="app-starter" options="-parameters" />
       <module name="audio-engine" options="-parameters" />
       <module name="audio-engine (1)" options="-parameters" />
+      <module name="composition" options="-parameters" />
+      <module name="render-engine" options="-parameters" />
     </option>
   </component>
 </project>
