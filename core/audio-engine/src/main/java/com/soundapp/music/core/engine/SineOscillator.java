@@ -8,7 +8,7 @@ import lombok.Getter;
  * playback real-time: chi lo chiama (renderer/composition) decide quando
  * e per quanti sample farlo generare.
  */
-public class SineOscillator {
+public class SineOscillator implements AudioSource {
 
     @Getter
     private float frequency = 440.0f;
@@ -35,6 +35,7 @@ public class SineOscillator {
     /**
      * Riempie il buffer (interleaved, {@link AudioContext#CHANNELS} canali) con i sample generati.
      */
+    @Override
     public void render(float[] buffer) {
         for (int i = 0; i < buffer.length; i += AudioContext.CHANNELS) {
             float sample = (float) (Math.sin(phase) * volume);
