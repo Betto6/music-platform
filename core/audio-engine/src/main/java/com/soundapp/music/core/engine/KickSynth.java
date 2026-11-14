@@ -2,6 +2,9 @@ package com.soundapp.music.core.engine;
 
 import lombok.Setter;
 
+import java.util.LinkedHashMap;
+import java.util.Map;
+
 /**
  * Kick drum sintetico: un SineOscillator la cui frequenza viene "tirata giù"
  * rapidamente da un pitch envelope, mentre un secondo envelope ne modula
@@ -15,7 +18,7 @@ import lombok.Setter;
  * solo, senza bisogno di un noteOff()). Una volta arrivati a IDLE, ulteriori
  * chiamate a render() producono solo silenzio finché non richiami trigger().
  */
-public class KickSynth implements AudioSource {
+public class KickSynth implements AudioSource, ParameterDescribable {
 
     @Setter
     private float startFrequency = 150.0f;
@@ -88,5 +91,30 @@ public class KickSynth implements AudioSource {
                 buffer[i + channel] = frame[channel] * amplitude;
             }
         }
+    }
+
+    /**
+     * I parametri del colpo: le due frequenze tra cui il pitch scende, i due
+     * tempi di decay esposti dai setter, e in più la descrizione completa dei
+     * due envelope interni, annidata. I decay compaiono quindi due volte -
+     * una come parametro "di facciata" (quello che si regola da fuori con
+     * {@code setPitchDecay}/{@code setAmpDecay}) e una dentro il rispettivo
+     * envelope: è voluto, perché chi rilegge il file vede sia la manopola che
+     * ha girato, sia l'inviluppo completo che ne è risultato (attack e
+     * sustain inclusi, che da fuori non sono regolabili).
+     */
+    @Override
+    public Map<String, Object> describeParameters() {
+        Map<String, Object> pitchParameters = pitchEnvelope.describeParameters();
+        Map<String, Object> ampParameters = ampEnvelope.describeParameters();
+
+        Map<String, Object> parameters = new LinkedHashMap<>();
+        parameters.put("startFrequency", startFrequency);
+        parameters.put("endFrequency", endFrequency);
+        parameters.put("pitchDecay", pitchParameters.get("decay"));
+        parameters.put("ampDecay", ampParameters.get("decay"));
+        parameters.put("pitchEnvelope", pitchParameters);
+        parameters.put("ampEnvelope", ampParameters);
+        return parameters;
     }
 }

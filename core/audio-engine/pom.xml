@@ -17,11 +17,17 @@
     <name>Audio Engine</name>
     <description>Core audio processing module</description>
 
-    <dependencies>
-        <dependency>
-            <groupId>org.projectlombok</groupId>
-            <artifactId>lombok</artifactId>
-        </dependency>
-    </dependencies>
+    <!--
+        Nessuna dipendenza: audio-engine è il fondo della piramide e deve
+        restare Java puro (javax.sound a parte, che è nel JDK).
+
+        Lombok NON va ri-dichiarato qui: arriva già dal pom radice con scope
+        "provided". Ri-dichiararlo senza scope - com'era prima - vuol dire
+        sovrascrivere quel "provided" con il "compile" di default, e quindi
+        dichiarare che audio-engine ha bisogno di Lombok anche a runtime: è
+        falso (Lombok esiste solo durante la compilazione) e lo trascinerebbe
+        come dipendenza transitiva a chiunque usi questo modulo.
+    -->
+
 
 </project>

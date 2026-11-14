@@ -30,32 +30,94 @@
         <relativePath/>
     </parent>
 
-    <!-- Proprietà -->
+    <!--
+        Proprietà.
+
+        java.version è l'unica leva da girare: il parent di Spring Boot la
+        traduce in maven.compiler.release, che è il modo corretto di fissare
+        la versione del linguaggio (a differenza della vecchia coppia
+        source/target, "release" vincola anche le API usate a quelle
+        effettivamente presenti in quel JDK, evitando di compilare codice che
+        poi non girerebbe sulla versione dichiarata). source e target erano
+        quindi config morta: con release impostato, il compiler plugin li
+        ignora.
+    -->
     <properties>
         <java.version>25</java.version>
-        <maven.compiler.source>25</maven.compiler.source>
-        <maven.compiler.target>25</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
 
-    <!-- Dipendenze comuni a tutti i moduli -->
+    <!--
+        Dipendenze comuni a TUTTI i moduli: qui sta solo ciò che serve
+        davvero a ognuno, cioè Lombok a compile-time e JUnit per i test.
+
+        Spring Boot NON sta qui: lo usa solo app-starter (vedi il suo pom).
+        audio-engine, composition e render-engine sono librerie Java pure -
+        DSP e I/O di file - e non devono trascinarsi dietro un application
+        framework per compilare. Tenere il framework ai bordi del progetto,
+        e non al centro, è anche ciò che permette di provare il motore audio
+        con dei normali unit test, senza far partire un context Spring.
+    -->
     <dependencies>
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter</artifactId>
-        </dependency>
-
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-test</artifactId>
-            <scope>test</scope>
-        </dependency>
-
+        <!--
+            provided = serve per compilare, non a runtime. È esatto per un
+            annotation processor: il suo lavoro finisce quando la classe è
+            compilata, e così non entra in nessun artefatto prodotto.
+        -->
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
             <scope>provided</scope>
         </dependency>
+
+        <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter</artifactId>
+            <scope>test</scope>
+        </dependency>
     </dependencies>
+
+    <build>
+        <plugins>
+            <!--
+                Da JDK 23 javac non esegue più gli annotation processor che
+                trova "per caso" sul classpath: vanno dichiarati. Senza questo
+                blocco Lombok non gira sotto Maven (in IntelliJ sì, perché ha
+                un suo plugin) e i getter/setter generati non esistono, con
+                errori "cannot find symbol: getFrequency()" in compilazione.
+            -->
+            <!--
+                I sorgenti sono UTF-8 (project.build.sourceEncoding), ma su
+                Windows la JVM scrive su stdout usando la code page di
+                sistema: native.encoding e stdout.encoding valgono Cp1252,
+                quindi un messaggio di log con un accento esce illeggibile
+                ("non � stato possibile"). file.encoding=UTF-8 non basta:
+                riguarda la lettura/scrittura dei file, non la console.
+                Qui si forza l'encoding dello stream di output della JVM
+                forkata dai test.
+            -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <configuration>
+                    <argLine>-Dstdout.encoding=UTF-8 -Dstderr.encoding=UTF-8</argLine>
+                </configuration>
+            </plugin>
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <configuration>
+                    <annotationProcessorPaths>
+                        <path>
+                            <groupId>org.projectlombok</groupId>
+                            <artifactId>lombok</artifactId>
+                            <version>${lombok.version}</version>
+                        </path>
+                    </annotationProcessorPaths>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
 
 </project>

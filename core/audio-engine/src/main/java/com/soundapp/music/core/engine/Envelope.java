@@ -1,5 +1,8 @@
 package com.soundapp.music.core.engine;
 
+import java.util.LinkedHashMap;
+import java.util.Map;
+
 /**
  * Inviluppo ADSR (Attack-Decay-Sustain-Release): descrive come l'ampiezza di
  * un suono cambia nel tempo, dal momento in cui una nota parte (noteOn) a
@@ -15,7 +18,7 @@ package com.soundapp.music.core.engine;
  * percepisce come più naturali - ma è un raffinamento, non il ciclo base:
  * lo aggiungeremo solo se, ascoltando, la versione lineare suonerà innaturale.
  */
-public class Envelope {
+public class Envelope implements ParameterDescribable {
 
     // Le fasi ADSR, più IDLE: lo stato "a riposo" prima del primo noteOn()
     // e dopo che il release è arrivato a zero.
@@ -140,5 +143,21 @@ public class Envelope {
         }
         float totalSamples = (millis / 1000.0f) * AudioContext.SAMPLE_RATE;
         return range / totalSamples;
+    }
+
+    /**
+     * I quattro parametri ADSR, nelle stesse unità dei setter: millisecondi
+     * per attack/decay/release, livello 0.0-1.0 per il sustain. Non include
+     * la fase corrente né il livello raggiunto: quelli sono stato di
+     * esecuzione, non parametri con cui il suono è stato impostato.
+     */
+    @Override
+    public Map<String, Object> describeParameters() {
+        Map<String, Object> parameters = new LinkedHashMap<>();
+        parameters.put("attack", attackMillis);
+        parameters.put("decay", decayMillis);
+        parameters.put("sustain", sustainLevel);
+        parameters.put("release", releaseMillis);
+        return parameters;
     }
 }

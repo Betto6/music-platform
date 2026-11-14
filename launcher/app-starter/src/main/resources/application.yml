@@ -2,16 +2,33 @@ spring:
   application:
     name: Music Platform
 
-server:
-  port: 8080
+# Dove finiscono i WAV esportati (e i loro sidecar .yml).
+#
+# È l'unico parametro che cambia davvero da un'installazione all'altra: in
+# locale una cartella del progetto, in container il punto di mount di un
+# volume. Il README descrive questa cartella come l'unica integrazione con lo
+# strumento live, quindi è giusto che sia configurabile dall'esterno, senza
+# ricompilare:
+#
+#   ./mvnw spring-boot:run -Dspring-boot.run.arguments=--music.render.output-directory=/altro/posto
+#   java -jar app.jar --music.render.output-directory=/altro/posto
+#   MUSIC_RENDER_OUTPUT_DIRECTORY=/altro/posto   (variabile d'ambiente, es. in Docker)
+#
+# Il percorso relativo è relativo alla directory di lavoro del processo.
+music:
+  render:
+    output-directory: out
 
-# Configurazioni audio custom
-audio:
-  sample-rate: 44100
-  buffer-size: 512
-  channels: 2
+# Sample rate, numero di canali e dimensione del buffer NON stanno qui.
+# Vivono in AudioContext (e in FRAMES_PER_CHUNK) come costanti del motore.
+# Erano elencati in questo file sotto "audio:", ma nessuna riga di codice li
+# leggeva: due fonti di verità che potevano divergere in silenzio, che è
+# peggio di una costante dichiarata in un posto solo. Cambiare il sample rate
+# non è una scelta di deployment - invaliderebbe ogni WAV già esportato e
+# cambierebbe il suono di ogni envelope - quindi è una decisione da prendere
+# nel codice, consapevolmente.
 
 logging:
   level:
-    com.tuoprogetto.music: DEBUG
+    com.soundapp.music: DEBUG
     org.springframework: INFO

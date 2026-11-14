@@ -1,3 +1,15 @@
 target/
 *.class
 *.log
+
+# WAV esportati e i loro sidecar: artefatti generati, non sorgenti
+out/
+*.wav
+
+# Main di studio: si ascoltano in locale e non entrano nel repo.
+# Nota: stanno in un source root di produzione, quindi finiscono comunque
+# nel jar e nell'immagine quando compili in locale. Se diventano tanti,
+# meglio spostarli fuori da src/main (es. in src/test o in una cartella
+# scratch/ ignorata) invece di aggiungere righe qui.
+launcher/app-starter/src/main/java/com/soundapp/music/PreviewTest.java
+launcher/app-starter/src/main/java/com/soundapp/music/SecondPreview.java

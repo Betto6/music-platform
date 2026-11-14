@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Logging valido SOLO nei test: logback-test.xml ha la precedenza su
+  logback.xml quando si trova sul classpath di test, e non viene impacchettato
+  nel jar della libreria.
+
+  Serve a due cose. La prima è tenere leggibile l'output della build: senza
+  configurazione Logback parte con il livello DEBUG sulla radice e un pattern
+  verboso, qui si tiene WARN e una riga corta.
+
+  La seconda è rendere visibile il messaggio che WavRenderer emette quando il
+  dump dei parametri non è scrivibile. Quel WARN - con il suo stack trace
+  accorciato a tre righe - è ATTESO: lo produce il test che blocca di
+  proposito il percorso del sidecar per verificare che l'export del WAV
+  riesca comunque. Vederlo scorrere durante la build non significa che
+  qualcosa sia rotto; se sparisse, vorrebbe dire che quel ramo di codice non
+  viene più esercitato.
+-->
+<configuration>
+
+    <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <!-- %ex{3}: solo le prime tre righe dello stack trace. Basta a
+                 capire la causa, non seppellisce il resto dell'output. -->
+            <pattern>%-5level %logger{0} - %msg%n%ex{3}</pattern>
+        </encoder>
+    </appender>
+
+    <root level="WARN">
+        <appender-ref ref="CONSOLE"/>
+    </root>
+
+</configuration>

@@ -7,11 +7,28 @@
         <sourceOutputDir name="target/generated-sources/annotations" />
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
-        <module name="audio-engine" />
         <module name="audio-engine (1)" />
-        <module name="app-starter" />
+      </profile>
+      <profile name="Annotation profile for Music Platform" enabled="true">
+        <sourceOutputDir name="target/generated-sources/annotations" />
+        <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
+        <outputRelativeToContentRoot value="true" />
+        <processorPath useClasspath="false">
+          <entry name="$MAVEN_REPOSITORY$/org/projectlombok/lombok/1.18.46/lombok-1.18.46.jar" />
+        </processorPath>
+        <module name="audio-engine" />
         <module name="render-engine" />
         <module name="composition" />
+      </profile>
+      <profile name="Annotation profile for app-starter" enabled="true">
+        <sourceOutputDir name="target/generated-sources/annotations" />
+        <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
+        <outputRelativeToContentRoot value="true" />
+        <processorPath useClasspath="false">
+          <entry name="$MAVEN_REPOSITORY$/org/projectlombok/lombok/1.18.46/lombok-1.18.46.jar" />
+          <entry name="$MAVEN_REPOSITORY$/org/springframework/boot/spring-boot-configuration-processor/4.1.0/spring-boot-configuration-processor-4.1.0.jar" />
+        </processorPath>
+        <module name="app-starter" />
       </profile>
     </annotationProcessing>
   </component>
@@ -21,6 +38,7 @@
       <module name="audio-engine" options="-parameters" />
       <module name="audio-engine (1)" options="-parameters" />
       <module name="composition" options="-parameters" />
+      <module name="music-platform" options="-parameters" />
       <module name="render-engine" options="-parameters" />
     </option>
   </component>

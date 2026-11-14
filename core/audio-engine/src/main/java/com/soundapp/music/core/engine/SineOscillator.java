@@ -2,13 +2,16 @@ package com.soundapp.music.core.engine;
 
 import lombok.Getter;
 
+import java.util.LinkedHashMap;
+import java.util.Map;
+
 /**
  * Synth object di base: oscillatore sinusoidale.
  * Genera samples in un buffer dato, senza alcuna nozione di
  * playback real-time: chi lo chiama (renderer/composition) decide quando
  * e per quanti sample farlo generare.
  */
-public class SineOscillator implements AudioSource {
+public class SineOscillator implements AudioSource, ParameterDescribable {
 
     @Getter
     private float frequency = 440.0f;
@@ -53,5 +56,13 @@ public class SineOscillator implements AudioSource {
 
     private void updatePhaseIncrement() {
         this.phaseIncrement = AudioContext.frequencyToPhaseIncrement(frequency);
+    }
+
+    @Override
+    public Map<String, Object> describeParameters() {
+        Map<String, Object> parameters = new LinkedHashMap<>();
+        parameters.put("frequency", frequency);
+        parameters.put("volume", volume);
+        return parameters;
     }
 }

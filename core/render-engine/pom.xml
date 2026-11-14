@@ -28,6 +28,35 @@
             <artifactId>composition</artifactId>
             <version>${project.version}</version>
         </dependency>
+
+        <!--
+            Solo l'API di logging, non un'implementazione: una libreria dice
+            cosa vuole loggare, è l'applicazione (app-starter, via Spring
+            Boot) a decidere dove finiscono quei messaggi. La versione la
+            gestisce il BOM di Spring Boot.
+        -->
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
+        </dependency>
+
+        <!--
+            Solo nei test: un'implementazione che raccolga davvero i messaggi.
+            Senza, SLF4J avvisa "No SLF4J providers were found" a ogni build e
+            il log.warn di WavRenderer non stampa nulla - quindi il messaggio
+            che il test sul sidecar non scrivibile dovrebbe produrre non si
+            vedrebbe mai.
+
+            Scope test: non entra nel jar della libreria né nell'immagine. In
+            produzione l'implementazione la sceglie l'applicazione (app-starter
+            prende lo stesso Logback da spring-boot-starter, così i log nei
+            test somigliano a quelli veri). Versione dal BOM di Spring Boot.
+        -->
+        <dependency>
+            <groupId>ch.qos.logback</groupId>
+            <artifactId>logback-classic</artifactId>
+            <scope>test</scope>
+        </dependency>
     </dependencies>
 
 </project>

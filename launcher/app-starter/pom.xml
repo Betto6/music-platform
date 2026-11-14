@@ -17,30 +17,83 @@
     <name>App Starter</name>
     <description>Main Spring Boot Application</description>
 
-    <properties>
-        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-    </properties>
-
+    <!--
+        Questo è l'unico modulo che conosce Spring Boot: è qui che il
+        progetto smette di essere una libreria e diventa un'applicazione.
+        Da qui arrivano anche l'implementazione di logging (Logback) e la
+        configurazione, che i moduli core non devono scegliere al posto suo.
+    -->
     <dependencies>
         <dependency>
             <groupId>com.soundapp.music</groupId>
             <artifactId>render-engine</artifactId>
             <version>${project.version}</version>
         </dependency>
+
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter</artifactId>
+        </dependency>
+
+        <!-- Qui serve davvero: avvia il context e lo prova. I moduli core si
+             accontentano di JUnit, che arriva dal pom radice. -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-test</artifactId>
+            <scope>test</scope>
+        </dependency>
     </dependencies>
 
     <build>
-        <resources>
-            <resource>
-                <directory>src/main/resources</directory>
-                <filtering>false</filtering>
-            </resource>
-        </resources>
         <plugins>
+            <!--
+                Aggiunge il processor che genera i metadati delle
+                @ConfigurationProperties (spring-configuration-metadata.json):
+                è ciò che fa funzionare l'autocompletamento e la validazione di
+                "music.render.output-directory" dentro application.yml.
+
+                combine.children="append" è la parte importante: senza quello
+                questo blocco SOSTITUIREBBE l'annotationProcessorPaths
+                ereditato dal pom radice, e si perderebbe Lombok. Con append i
+                due elenchi si sommano.
+
+                Il processor sta solo qui e NON tra le dependencies: serve al
+                compilatore, non al codice. Dichiararlo come dipendenza
+                (anche "optional") lo farebbe finire nel jar, come succedeva a
+                Lombok.
+            -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <configuration>
+                    <annotationProcessorPaths combine.children="append">
+                        <path>
+                            <groupId>org.springframework.boot</groupId>
+                            <artifactId>spring-boot-configuration-processor</artifactId>
+                        </path>
+                    </annotationProcessorPaths>
+                </configuration>
+            </plugin>
+
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
+                <configuration>
+                    <!--
+                        Il repackage di Spring Boot impacchetta in BOOT-INF/lib
+                        anche le dipendenze "provided": lo scope non basta a
+                        tenere Lombok fuori dall'artefatto, serve dirlo qui.
+                        Senza questa esclusione il jar (e quindi l'immagine
+                        container) si porta dietro ~2 MB di annotation
+                        processor che a runtime non serve a niente.
+                    -->
+                    <excludes>
+                        <exclude>
+                            <groupId>org.projectlombok</groupId>
+                            <artifactId>lombok</artifactId>
+                        </exclude>
+                    </excludes>
+                </configuration>
             </plugin>
         </plugins>
     </build>

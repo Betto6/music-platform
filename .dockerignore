@@ -1,0 +1,26 @@
+# Tutto ciò che non serve alla build va escluso dal contesto: Docker lo
+# invia al daemon prima di eseguire qualsiasi istruzione, e un contesto
+# gonfio rallenta ogni build. Soprattutto: i target/ locali, compilati su
+# Windows con il JDK della macchina, non devono mai finire in un'immagine
+# Linux - la build dentro il container deve ripartire dai sorgenti.
+**/target/
+
+# Artefatti audio generati: pesano e non sono input della build.
+**/*.wav
+out/
+
+.git/
+.gitignore
+.github/
+
+.idea/
+*.iml
+*.iws
+*.ipr
+
+Dockerfile
+.dockerignore
+README.md
+ROADMAP.md
+COSIMI_INDEX.md
+IMPLEMENTATION_GUIDE.md
